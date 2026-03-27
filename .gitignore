@@ -1,21 +1,7 @@
-# python
 __pycache__/
 *.pyc
-*.pyo
-
-# virtual env
 .venv/
-
-# env variables
 .env
-
-# OS files
-.DS_Store
-
-# database (optional)
 *.db
 *.csv
-.venv/
-__pycache__/
-*.pyc
-data/IPL.csv
+.DS_Store

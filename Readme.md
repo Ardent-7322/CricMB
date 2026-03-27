@@ -27,7 +27,7 @@ Each axis represents an important skill area.
 
 For batters this can include:
 
-* scoring speed
+* Total runs
 * dot ball %
 * boundary hitting
 * performance vs spin
@@ -39,9 +39,9 @@ For bowlers this can include:
 
 * economy
 * dot ball %
-* wicket taking ability
-* powerplay control
-* death overs control
+* wickets taken
+* powerplay wickets
+* death overs economy
 * performance vs right hand batters
 * performance vs left hand batters
 

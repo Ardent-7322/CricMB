@@ -40,12 +40,26 @@ For bowlers this can include:
 * economy
 * dot ball %
 * wickets taken
-* powerplay wickets
+* strike rate
 * death overs economy
 * performance vs right hand batters
 * performance vs left hand batters
 
 This makes it easy to quickly compare two players and understand their strengths.
+
+
+## Example Comparisons
+
+### Batter comparison (radar chart)
+Shows strengths across strike rate, dot ball %, boundary %, performance vs spin and pace.
+
+![Batter Comparison](docs/Batter_comparison.png)
+
+
+### Bowler comparison (radar chart)
+Shows economy, dot ball %, wicket taking ability, powerplay and death overs performance.
+
+![Bowler Comparison](docs/Bowler_comparison.png)
 
 ---
 

@@ -5,12 +5,17 @@ sys.path.append(os.path.dirname(__file__))
 from data_loader import load_data, clean_data, get_name_map
 from stats import get_multiple_batters, compute_global_percentiles, add_percentiles
 from bowler_stats import get_multiple_bowlers, compute_global_bowler_percentiles, add_bowler_percentiles
+from team_stats import (
+    standardize_team_names, get_multiple_teams,
+    compute_global_team_percentiles, add_team_percentiles, ACTIVE_TEAMS
+)
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
 
 ipl, players = load_data()
 ipl_clean, players = clean_data(ipl, players)
+ipl_clean = standardize_team_names(ipl_clean)   # standardize once at startup
 name_map = get_name_map(players)
 
 print("Computing batter percentiles...")
@@ -20,6 +25,10 @@ print(f"Done! {len(global_batter_stats)} batters indexed.")
 print("Computing bowler percentiles...")
 global_bowler_stats = compute_global_bowler_percentiles(ipl_clean)
 print(f"Done! {len(global_bowler_stats)} bowlers indexed.")
+
+print("Computing team percentiles...")
+global_team_stats = compute_global_team_percentiles(ipl_clean)
+print(f"Done! {len(global_team_stats)} teams indexed.")
 
 all_players = sorted(ipl_clean['batter'].unique().tolist())
 all_bowlers = sorted(ipl_clean['bowler'].unique().tolist())
@@ -83,6 +92,29 @@ def compare_bowlers():
         r['display_name'] = name_map.get(r['name'], r['name'].title())
 
     results = add_bowler_percentiles(results, global_bowler_stats)
+    return jsonify(results)
+
+@app.route('/api/teams', methods=['GET'])
+def get_teams():
+    return jsonify(ACTIVE_TEAMS)
+
+@app.route('/api/compare_teams', methods=['GET'])
+def compare_teams():
+    names = request.args.getlist('teams')
+    season = request.args.get('season', 'all')
+
+    if not names:
+        return jsonify({'error': 'No teams provided'}), 400
+    if len(names) < 2:
+        return jsonify({'error': 'At least 2 teams required'}), 400
+    if len(names) > 5:
+        return jsonify({'error': 'Maximum 5 teams allowed'}), 400
+
+    results = get_multiple_teams(ipl_clean, names, season)
+    if not results:
+        return jsonify({'error': 'No teams found'}), 404
+
+    results = add_team_percentiles(results, global_team_stats)
     return jsonify(results)
 
 @app.route('/api/seasons', methods=['GET'])

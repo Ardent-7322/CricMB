@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CricMB - Teams</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">Cric<span>MB</span></div>
+      <div class="nav-links">
+        <a href="/">Batters</a>
+        <a href="/bowler.html">Bowlers</a>
+        <a href="/team.html" class="active">Teams</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="search-section">
+        <h2>Compare IPL Teams</h2>
+        <p class="subtitle">Add up to 5 teams to compare</p>
+
+        <div class="search-row">
+          <div class="search-box">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search team name..."
+              autocomplete="off"
+            />
+            <div class="suggestions" id="suggestions"></div>
+          </div>
+          <select id="seasonSelect">
+            <option value="all">All Seasons</option>
+          </select>
+          <button id="compareBtn">Compare</button>
+        </div>
+
+        <div class="selected-players" id="selectedTeams"></div>
+      </div>
+
+      <div class="results-section" id="resultsSection" style="display: none">
+        <div class="stats-table-wrapper">
+          <table class="stats-table" id="statsTable">
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Win %</th>
+                <th>Avg 1st Inn</th>
+                <th>Avg 2nd Inn</th>
+                <th>Home Win %</th>
+                <th>PP Avg</th>
+                <th>Death Avg</th>
+                <th>Sixes/Match</th>
+                <th>W/M</th>
+              </tr>
+            </thead>
+            <tbody id="statsBody"></tbody>
+          </table>
+        </div>
+
+        <div class="chart-wrapper">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/team.js"></script>
+  </body>
+</html>

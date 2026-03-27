@@ -103,7 +103,6 @@ body {
     padding: 0.6rem 1rem;
     cursor: pointer;
     font-size: 0.9rem;
-    text-transform: capitalize;
 }
 
 .suggestion-item:hover { background: #f0f4f8; }
@@ -147,7 +146,7 @@ button#compareBtn:hover { background: #00d4aa; color: #1a1a2e; }
     font-size: 0.85rem;
     font-weight: 600;
     color: white;
-    text-transform: capitalize;
+    /* removed text-transform: capitalize — breaks team/player names with proper casing */
 }
 
 .player-tag .remove {
@@ -197,7 +196,8 @@ button#compareBtn:hover { background: #00d4aa; color: #1a1a2e; }
 
 .player-name-cell {
     font-weight: 700;
-    text-transform: capitalize;
+    /* removed text-transform: capitalize — team names like "Mumbai Indians"
+       and player display names are already correctly cased from the backend */
 }
 
 .chart-wrapper {

@@ -40,7 +40,7 @@ For bowlers this can include:
 * economy
 * dot ball %
 * wickets taken
-* powerplay wickets
+* strike rate
 * death overs economy
 * performance vs right hand batters
 * performance vs left hand batters

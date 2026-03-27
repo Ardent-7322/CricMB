@@ -53,13 +53,13 @@ This makes it easy to quickly compare two players and understand their strengths
 ### Batter comparison (radar chart)
 Shows strengths across strike rate, dot ball %, boundary %, performance vs spin and pace.
 
-![Batter Comparison](docs/batter_comparison.png)
+![Batter Comparison](docs/Batter_comparison.png)
 
 
 ### Bowler comparison (radar chart)
 Shows economy, dot ball %, wicket taking ability, powerplay and death overs performance.
 
-![Bowler Comparison](docs/bowler_comparison.png)
+![Bowler Comparison](docs/Bowler_comparison.png)
 
 ---
 

@@ -35,15 +35,14 @@ def get_name_map():
 name_map = get_name_map()
 
 def query_batter(batter_name, season=None):
-    season_filter = f"AND season = {int(season)}" if season and season != 'all' else ""
-    query = f"""
-        SELECT phase, valid_ball, runs_batter, bowler_style,
-               is_boundary, is_dot, match_id, innings
-        FROM ipl_data
-        WHERE batter = '{batter_name}' {season_filter}
-    """
+    if season and season != 'all':
+        query = "SELECT phase, valid_ball, runs_batter, bowler_style, is_boundary, is_dot, match_id, innings FROM ipl_data WHERE batter = :batter AND season = :season"
+        params = {'batter': batter_name, 'season': int(season)}
+    else:
+        query = "SELECT phase, valid_ball, runs_batter, bowler_style, is_boundary, is_dot, match_id, innings FROM ipl_data WHERE batter = :batter"
+        params = {'batter': batter_name}
     with engine.connect() as conn:
-        df = pd.read_sql(query, conn)
+        df = pd.read_sql(query, conn, params=params)
     return df
 
 def calc_batter_stats(df, batter_name):
@@ -83,16 +82,14 @@ def calc_batter_stats(df, batter_name):
     }
 
 def get_all_batter_stats(season=None):
-    season_filter = f"AND season = {int(season)}" if season and season != 'all' else ""
-    query = f"""
-        SELECT batter, phase, valid_ball, runs_batter, bowler_style,
-               is_boundary, is_dot, match_id, innings
-        FROM ipl_data
-        WHERE valid_ball = 1 {season_filter}
-    """
+    if season and season != 'all':
+        query = "SELECT batter, phase, valid_ball, runs_batter, bowler_style, is_boundary, is_dot, match_id, innings FROM ipl_data WHERE valid_ball = 1 AND season = :season"
+        params = {'season': int(season)}
+    else:
+        query = "SELECT batter, phase, valid_ball, runs_batter, bowler_style, is_boundary, is_dot, match_id, innings FROM ipl_data WHERE valid_ball = 1"
+        params = {}
     with engine.connect() as conn:
-        df = pd.read_sql(query, conn)
-
+        df = pd.read_sql(query, conn, params=params)
     results = []
     for batter in df['batter'].unique():
         bdf = df[df['batter'] == batter]
@@ -121,15 +118,14 @@ def add_percentiles(results, all_stats):
     return results
 
 def query_bowler(bowler_name, season=None):
-    season_filter = f"AND season = {int(season)}" if season and season != 'all' else ""
-    query = f"""
-        SELECT phase, valid_ball, runs_bowler, runs_total,
-               bowler_wicket, batter, match_id, innings
-        FROM ipl_data
-        WHERE bowler = '{bowler_name}' {season_filter}
-    """
+    if season and season != 'all':
+        query = "SELECT phase, valid_ball, runs_bowler, runs_total, bowler_wicket, batter, match_id, innings FROM ipl_data WHERE bowler = :bowler AND season = :season"
+        params = {'bowler': bowler_name, 'season': int(season)}
+    else:
+        query = "SELECT phase, valid_ball, runs_bowler, runs_total, bowler_wicket, batter, match_id, innings FROM ipl_data WHERE bowler = :bowler"
+        params = {'bowler': bowler_name}
     with engine.connect() as conn:
-        df = pd.read_sql(query, conn)
+        df = pd.read_sql(query, conn, params=params)
     return df
 
 def calc_bowler_stats(df, bowler_name):
@@ -180,15 +176,14 @@ def calc_bowler_stats(df, bowler_name):
     }
 
 def get_all_bowler_stats(season=None):
-    season_filter = f"AND season = {int(season)}" if season and season != 'all' else ""
-    query = f"""
-        SELECT bowler, phase, valid_ball, runs_bowler, runs_total,
-               bowler_wicket, batter, match_id, innings
-        FROM ipl_data
-        WHERE valid_ball = 1 {season_filter}
-    """
+    if season and season != 'all':
+        query = "SELECT bowler, phase, valid_ball, runs_bowler, runs_total, bowler_wicket, batter, match_id, innings FROM ipl_data WHERE valid_ball = 1 AND season = :season"
+        params = {'season': int(season)}
+    else:
+        query = "SELECT bowler, phase, valid_ball, runs_bowler, runs_total, bowler_wicket, batter, match_id, innings FROM ipl_data WHERE valid_ball = 1"
+        params = {}
     with engine.connect() as conn:
-        df = pd.read_sql(query, conn)
+        df = pd.read_sql(query, conn, params=params)
 
     with engine.connect() as conn:
         players = pd.read_sql('SELECT "battingName", "battingStyles" FROM players', conn)
@@ -264,7 +259,11 @@ def search_players():
     if not query or len(query) < 2:
         return jsonify([])
     with engine.connect() as conn:
-        df = pd.read_sql(f"SELECT DISTINCT batter FROM ipl_data WHERE batter LIKE '%{query}%' LIMIT 10", conn)
+        df = pd.read_sql(
+            "SELECT DISTINCT batter FROM ipl_data WHERE batter LIKE :q LIMIT 10",
+            conn,
+            params={'q': f'%{query}%'}
+        )
     matched = df['batter'].tolist()
     return jsonify([{'id': p, 'display': name_map.get(p, p.title())} for p in matched])
 
@@ -274,7 +273,11 @@ def search_bowlers():
     if not query or len(query) < 2:
         return jsonify([])
     with engine.connect() as conn:
-        df = pd.read_sql(f"SELECT DISTINCT bowler FROM ipl_data WHERE bowler LIKE '%{query}%' LIMIT 10", conn)
+        df = pd.read_sql(
+            "SELECT DISTINCT bowler FROM ipl_data WHERE bowler LIKE :q LIMIT 10",
+            conn,
+            params={'q': f'%{query}%'}
+        )
     matched = df['bowler'].tolist()
     return jsonify([{'id': b, 'display': name_map.get(b, b.title())} for b in matched])
 

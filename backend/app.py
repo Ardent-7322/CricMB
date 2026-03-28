@@ -3,11 +3,11 @@ from flask_cors import CORS
 import sys, os
 sys.path.append(os.path.dirname(__file__))
 from data_loader import load_from_db, clean_data, get_name_map
-from stats import get_multiple_batters, compute_global_percentiles, add_percentiles
-from bowler_stats import get_multiple_bowlers, compute_global_bowler_percentiles, add_bowler_percentiles
+from stats import get_multiple_batters, add_percentiles
+from bowler_stats import get_multiple_bowlers, add_bowler_percentiles
 from team_stats import (
     standardize_team_names, get_multiple_teams,
-    compute_global_team_percentiles, add_team_percentiles, ACTIVE_TEAMS
+    add_team_percentiles, ACTIVE_TEAMS
 )
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
@@ -18,21 +18,31 @@ ipl_clean, players = clean_data(ipl, players)
 ipl_clean = standardize_team_names(ipl_clean)
 name_map = get_name_map(players)
 
-print("Computing batter percentiles...")
-global_batter_stats = compute_global_percentiles(ipl_clean)
-print(f"Done! {len(global_batter_stats)} batters indexed.")
-
-print("Computing bowler percentiles...")
-global_bowler_stats = compute_global_bowler_percentiles(ipl_clean)
-print(f"Done! {len(global_bowler_stats)} bowlers indexed.")
-
-print("Computing team percentiles...")
-global_team_stats = compute_global_team_percentiles(ipl_clean)
-print(f"Done! {len(global_team_stats)} teams indexed.")
-
 all_players = sorted(ipl_clean['batter'].unique().tolist())
 all_bowlers = sorted(ipl_clean['bowler'].unique().tolist())
 all_seasons = sorted(ipl_clean['season'].dropna().unique().tolist())
+
+# Lazy cache
+_global_batter_stats = None
+_global_bowler_stats = None
+
+def get_global_batter_stats():
+    global _global_batter_stats
+    if _global_batter_stats is None:
+        from stats import compute_global_percentiles
+        print("Computing batter percentiles...")
+        _global_batter_stats = compute_global_percentiles(ipl_clean)
+        print(f"Done! {len(_global_batter_stats)} batters indexed.")
+    return _global_batter_stats
+
+def get_global_bowler_stats():
+    global _global_bowler_stats
+    if _global_bowler_stats is None:
+        from bowler_stats import compute_global_bowler_percentiles
+        print("Computing bowler percentiles...")
+        _global_bowler_stats = compute_global_bowler_percentiles(ipl_clean)
+        print(f"Done! {len(_global_bowler_stats)} bowlers indexed.")
+    return _global_bowler_stats
 
 @app.route('/')
 def index():
@@ -75,7 +85,7 @@ def compare_players():
     for r in results:
         r['display_name'] = name_map.get(r['name'], r['name'].title())
 
-    results = add_percentiles(results, global_batter_stats)
+    results = add_percentiles(results, get_global_batter_stats())
     return jsonify(results)
 
 @app.route('/api/compare_bowlers', methods=['GET'])
@@ -95,7 +105,7 @@ def compare_bowlers():
     for r in results:
         r['display_name'] = name_map.get(r['name'], r['name'].title())
 
-    results = add_bowler_percentiles(results, global_bowler_stats)
+    results = add_bowler_percentiles(results, get_global_bowler_stats())
     return jsonify(results)
 
 @app.route('/api/teams', methods=['GET'])

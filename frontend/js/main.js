@@ -1,8 +1,19 @@
 const API = "http://127.0.0.1:5000/api";
 const COLORS = ["#e63946", "#2196f3", "#4caf50", "#ff9800", "#9c27b0"];
+const usedColors = new Set();
 
 let selectedPlayers = [];
 let radarChart = null;
+
+function getNextColor() {
+  for (let color of COLORS) {
+    if (!usedColors.has(color)) {
+      usedColors.add(color);
+      return color;
+    }
+  }
+  return COLORS[0];
+}
 
 async function loadSeasons() {
   const res = await fetch(`${API}/seasons`);
@@ -15,6 +26,7 @@ async function loadSeasons() {
     select.appendChild(opt);
   });
 }
+
 document
   .getElementById("searchInput")
   .addEventListener("input", async function () {
@@ -40,13 +52,16 @@ function addPlayer(id, display) {
     alert("Maximum 5 players allowed");
     return;
   }
-  selectedPlayers.push({ id, display });
+  const color = getNextColor();
+  selectedPlayers.push({ id, display, color });
   renderTags();
   document.getElementById("searchInput").value = "";
   document.getElementById("suggestions").innerHTML = "";
 }
 
 function removePlayer(id) {
+  const removed = selectedPlayers.find((p) => p.id === id);
+  if (removed) usedColors.delete(removed.color);
   selectedPlayers = selectedPlayers.filter((p) => p.id !== id);
   renderTags();
   if (document.getElementById("resultsSection").style.display !== "none") {
@@ -66,8 +81,8 @@ function renderTags() {
   const container = document.getElementById("selectedPlayers");
   container.innerHTML = selectedPlayers
     .map(
-      (p, i) =>
-        `<div class="player-tag" style="background:${COLORS[i]}">
+      (p) =>
+        `<div class="player-tag" style="background:${p.color}">
       ${p.display}
       <span class="remove" onclick="removePlayer('${p.id}')">×</span>
     </div>`,
@@ -112,21 +127,26 @@ document
 function renderTable(data) {
   const body = document.getElementById("statsBody");
   body.innerHTML = data
-    .map(
-      (p, i) => `
-    <tr>
-      <td class="player-name-cell" style="color:${COLORS[i]}">${p.display_name}</td>
-      <td>${p.powerplay_sr}</td>
-      <td>${p.death_sr}</td>
-      <td>${p.dot_pct}%</td>
-      <td>${p.pace_sr}</td>
-      <td>${p.spin_sr}</td>
-      <td>${p.death_bpb}</td>
-      <td>${p.total_runs}</td>
-      <td>${p.innings}</td>
-    </tr>
-  `,
-    )
+    .map((p) => {
+      const player = selectedPlayers.find((sp) => sp.id === p.name);
+      const color = player ? player.color : "#999";
+      return `
+      <tr>
+        <td><div class="player-name-cell" style="color:${color}">
+          <span class="color-dot" style="background:${color}"></span>
+          ${p.display_name}
+        </div></td>
+        <td>${p.powerplay_sr}</td>
+        <td>${p.death_sr}</td>
+        <td>${p.dot_pct}%</td>
+        <td>${p.pace_sr}</td>
+        <td>${p.spin_sr}</td>
+        <td>${p.death_bpb}</td>
+        <td>${p.total_runs}</td>
+        <td>${p.innings}</td>
+      </tr>
+    `;
+    })
     .join("");
 }
 
@@ -140,22 +160,26 @@ function renderRadar(data) {
     "Dot %",
     "Death BpB",
   ];
-  const datasets = data.map((p, i) => ({
-    label: p.display_name,
-    data: [
-      p.powerplay_sr_pct,
-      p.death_sr_pct,
-      p.pace_sr_pct,
-      p.spin_sr_pct,
-      p.total_runs_pct,
-      p.dot_pct_pct,
-      p.death_bpb_pct,
-    ],
-    borderColor: COLORS[i],
-    backgroundColor: COLORS[i] + "33",
-    borderWidth: 2,
-    pointBackgroundColor: COLORS[i],
-  }));
+  const datasets = data.map((p) => {
+    const player = selectedPlayers.find((sp) => sp.id === p.name);
+    const color = player ? player.color : "#999";
+    return {
+      label: p.display_name,
+      data: [
+        p.powerplay_sr_pct,
+        p.death_sr_pct,
+        p.pace_sr_pct,
+        p.spin_sr_pct,
+        p.total_runs_pct,
+        p.dot_pct_pct,
+        p.death_bpb_pct,
+      ],
+      borderColor: color,
+      backgroundColor: color + "33",
+      borderWidth: 2,
+      pointBackgroundColor: color,
+    };
+  });
 
   if (radarChart) radarChart.destroy();
 

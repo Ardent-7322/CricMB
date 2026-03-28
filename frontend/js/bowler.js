@@ -1,8 +1,19 @@
 const API = "http://127.0.0.1:5000/api";
 const COLORS = ["#e63946", "#2196f3", "#4caf50", "#ff9800", "#9c27b0"];
+const usedColors = new Set();
 
 let selectedBowlers = [];
 let radarChart = null;
+
+function getNextColor() {
+  for (let color of COLORS) {
+    if (!usedColors.has(color)) {
+      usedColors.add(color);
+      return color;
+    }
+  }
+  return COLORS[0];
+}
 
 async function loadSeasons() {
   const res = await fetch(`${API}/seasons`);
@@ -41,13 +52,16 @@ function addBowler(id, display) {
     alert("Maximum 5 bowlers allowed");
     return;
   }
-  selectedBowlers.push({ id, display });
+  const color = getNextColor();
+  selectedBowlers.push({ id, display, color });
   renderTags();
   document.getElementById("searchInput").value = "";
   document.getElementById("suggestions").innerHTML = "";
 }
 
 function removeBowler(id) {
+  const removed = selectedBowlers.find((b) => b.id === id);
+  if (removed) usedColors.delete(removed.color);
   selectedBowlers = selectedBowlers.filter((b) => b.id !== id);
   renderTags();
   if (document.getElementById("resultsSection").style.display !== "none") {
@@ -67,20 +81,13 @@ function renderTags() {
   const container = document.getElementById("selectedBowlers");
   container.innerHTML = selectedBowlers
     .map(
-      (b, i) =>
-        `<div class="player-tag" style="background:${COLORS[i]}">
+      (b) =>
+        `<div class="player-tag" style="background:${b.color}">
       ${b.display}
       <span class="remove" onclick="removeBowler('${b.id}')">×</span>
     </div>`,
     )
     .join("");
-}
-
-function formatName(name) {
-  return name
-    .split(" ")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
 }
 
 async function fetchAndRender() {
@@ -120,21 +127,26 @@ document
 function renderTable(data) {
   const body = document.getElementById("statsBody");
   body.innerHTML = data
-    .map(
-      (b, i) => `
-    <tr>
-      <td class="player-name-cell" style="color:${COLORS[i]}">${b.display_name}</td>
-      <td>${b.economy}</td>
-      <td>${b.dot_pct}%</td>
-      <td>${b.bowling_sr}</td>
-      <td>${b.wickets}</td>
-      <td>${b.death_economy}</td>
-      <td>${b.wkts_vs_rhb}%</td>
-      <td>${b.wkts_vs_lhb}%</td>
-      <td>${b.innings}</td>
-    </tr>
-  `,
-    )
+    .map((b) => {
+      const bowler = selectedBowlers.find((sb) => sb.id === b.name);
+      const color = bowler ? bowler.color : "#999";
+      return `
+      <tr>
+        <td><div class="player-name-cell" style="color:${color}">
+          <span class="color-dot" style="background:${color}"></span>
+          ${b.display_name}
+        </div></td>
+        <td>${b.economy}</td>
+        <td>${b.dot_pct}%</td>
+        <td>${b.bowling_sr}</td>
+        <td>${b.wickets}</td>
+        <td>${b.death_economy}</td>
+        <td>${b.wkts_vs_rhb}%</td>
+        <td>${b.wkts_vs_lhb}%</td>
+        <td>${b.innings}</td>
+      </tr>
+    `;
+    })
     .join("");
 }
 
@@ -148,22 +160,26 @@ function renderRadar(data) {
     "Wkt% RHB",
     "Wkt% LHB",
   ];
-  const datasets = data.map((b, i) => ({
-    label: b.display_name,
-    data: [
-      b.economy_pct,
-      b.dot_pct_pct,
-      b.bowling_sr_pct,
-      b.wickets_pct,
-      b.death_economy_pct,
-      b.wkts_vs_rhb_pct,
-      b.wkts_vs_lhb_pct,
-    ],
-    borderColor: COLORS[i],
-    backgroundColor: COLORS[i] + "33",
-    borderWidth: 2,
-    pointBackgroundColor: COLORS[i],
-  }));
+  const datasets = data.map((b) => {
+    const bowler = selectedBowlers.find((sb) => sb.id === b.name);
+    const color = bowler ? bowler.color : "#999";
+    return {
+      label: b.display_name,
+      data: [
+        b.economy_pct,
+        b.dot_pct_pct,
+        b.bowling_sr_pct,
+        b.wickets_pct,
+        b.death_economy_pct,
+        b.wkts_vs_rhb_pct,
+        b.wkts_vs_lhb_pct,
+      ],
+      borderColor: color,
+      backgroundColor: color + "33",
+      borderWidth: 2,
+      pointBackgroundColor: color,
+    };
+  });
 
   if (radarChart) radarChart.destroy();
 

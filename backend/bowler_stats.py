@@ -1,8 +1,7 @@
 import pandas as pd
 import sys, os
 sys.path.append(os.path.dirname(__file__))
-from data_loader import load_data, clean_data
-
+from db_loader import load_from_db
 def get_bowler_stats(ipl, bowler_name, season=None):
     bowler_name = bowler_name.strip().lower()
     df = ipl[ipl['bowler'] == bowler_name].copy()

@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import sys, os
 sys.path.append(os.path.dirname(__file__))
-from data_loader import load_data, clean_data, get_name_map
+from data_loader import load_from_db, clean_data, get_name_map
 from stats import get_multiple_batters, compute_global_percentiles, add_percentiles
 from bowler_stats import get_multiple_bowlers, compute_global_bowler_percentiles, add_bowler_percentiles
 from team_stats import (
@@ -13,9 +13,9 @@ from team_stats import (
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
 
-ipl, players = load_data()
+ipl, players = load_from_db()
 ipl_clean, players = clean_data(ipl, players)
-ipl_clean = standardize_team_names(ipl_clean)   # standardize once at startup
+ipl_clean = standardize_team_names(ipl_clean)
 name_map = get_name_map(players)
 
 print("Computing batter percentiles...")
@@ -36,6 +36,10 @@ all_seasons = sorted(ipl_clean['season'].dropna().unique().tolist())
 
 @app.route('/')
 def index():
+    return send_from_directory('../frontend', 'home.html')
+
+@app.route('/index.html')
+def batters():
     return send_from_directory('../frontend', 'index.html')
 
 @app.route('/api/players', methods=['GET'])
@@ -110,11 +114,15 @@ def compare_teams():
     if len(names) > 5:
         return jsonify({'error': 'Maximum 5 teams allowed'}), 400
 
+    season_stats = get_multiple_teams(ipl_clean, ACTIVE_TEAMS, season)
+    if not season_stats:
+        return jsonify({'error': 'No data for this season'}), 404
+
     results = get_multiple_teams(ipl_clean, names, season)
     if not results:
         return jsonify({'error': 'No teams found'}), 404
 
-    results = add_team_percentiles(results, global_team_stats)
+    results = add_team_percentiles(results, season_stats)
     return jsonify(results)
 
 @app.route('/api/seasons', methods=['GET'])

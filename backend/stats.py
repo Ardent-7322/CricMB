@@ -2,7 +2,7 @@ import pandas as pd
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
-from data_loader import load_data, clean_data
+from db_loader import load_from_db
 
 def get_batter_stats(ipl, batter_name, season=None):
     batter_name = batter_name.strip().lower()

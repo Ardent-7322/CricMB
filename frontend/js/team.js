@@ -1,4 +1,4 @@
-const API = "http://127.0.0.1:5000/api";
+const API = "https://cricmb.onrender.com/api";
 const COLORS = ["#e63946", "#2196f3", "#4caf50", "#ff9800", "#9c27b0"];
 const usedColors = new Set();
 

@@ -12,6 +12,8 @@ Instead of only looking at stats like average or total runs, CricMB highlights i
 Player performance is converted into percentiles so comparison becomes simple.
 Higher percentile means the player performs better compared to other IPL players.
 
+[![Live App](https://img.shields.io/badge/Live-App-green)](https://cricmb.onrender.com)
+
 Example:
 
 * high percentile → strong skill
@@ -60,6 +62,8 @@ Shows strengths across strike rate, dot ball %, boundary %, performance vs spin 
 Shows economy, dot ball %, wicket taking ability, powerplay and death overs performance.
 
 ![Bowler Comparison](docs/Bowler_comparison.png)
+
+
 
 ---
 

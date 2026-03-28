@@ -6,8 +6,8 @@ from sqlalchemy import create_engine
 from data_loader import load_data, clean_data
 from team_stats import standardize_team_names
 
-DB_URL = os.environ.get("DATABASE_URL", "postgresql://neondb_owner:npg_XT5eLDYCla1V@ep-nameless-wildflower-a1k3rzdr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
-
+#DB_URL = os.environ.get("DATABASE_URL", "postgresql://neondb_owner:npg_XT5eLDYCla1V@ep-nameless-wildflower-a1k3rzdr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+DB_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:pass123@localhost:5433/cricmb")
 def setup_database():
     print("Loading and cleaning data...")
     ipl, players = load_data()

@@ -3,8 +3,8 @@ import os
 from sqlalchemy import create_engine
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
-DB_URL = os.environ.get("DATABASE_URL", "postgresql://neondb_owner:npg_XT5eLDYCla1V@ep-nameless-wildflower-a1k3rzdr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
-
+#DB_URL = os.environ.get("DATABASE_URL", "postgresql://neondb_owner:npg_XT5eLDYCla1V@ep-nameless-wildflower-a1k3rzdr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+DB_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:pass123@localhost:5433/cricmb")
 def load_data():
     ipl = pd.read_csv(os.path.join(DATA_DIR, 'IPL.csv'), low_memory=False)
     players = pd.read_csv(os.path.join(DATA_DIR, '2024_players_details.csv'))

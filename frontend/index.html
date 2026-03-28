@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <script>
-    document.querySelector('a[href="/index.html"]').classList.add("active");
+    document.addEventListener("DOMContentLoaded", function () {
+      const link = document.querySelector('a[href="/index.html"]');
+      if (link) link.classList.add("active");
+    });
   </script>
   <body>
     <nav class="navbar">

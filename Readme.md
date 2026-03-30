@@ -9,7 +9,7 @@ CricmB converts raw ball-by-ball data into percentile scores across specific ski
 
 ## How it works
 
-Every player gets a percentile score for each skill — calculated against all IPL players in the dataset. A score of 80 means the player performs better than 80% of IPL players in that area.
+Every player gets a percentile score for each skill - calculated against all IPL players in the dataset. A score of 80 means the player performs better than 80% of IPL players in that area.
 
 This makes comparison straightforward. You're not reading raw numbers, you're seeing relative strength across skills on a single chart.
 
@@ -49,7 +49,7 @@ Performance is displayed as a radar (spider) chart. Each axis is one skill area.
 
 Python, Streamlit, PostgreSQL, Pandas, Plotly
 
-Ball-by-ball IPL dataset — also used as the test database for [AskDB](https://github.com/Ardent-7322/AskDB-AI-Query-Assistant), a natural language query tool that connects directly to this PostgreSQL database.
+Ball-by-ball IPL dataset - also used as the test database for [AskDB](https://github.com/Ardent-7322/AskDB-AI-Query-Assistant), a natural language query tool that connects directly to this PostgreSQL database.
 
 
 ## Running locally

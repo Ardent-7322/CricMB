@@ -2,9 +2,9 @@ import pandas as pd
 from sqlalchemy import create_engine
 import os
 
-DB_URL = os.environ.get('DATABASE_URL', 'postgresql://postgres:pass123@localhost:5433/cricmb')
+DB_URL = os.environ.get('DATABASE_URL')
 
-# Fix for Render's postgres:// vs postgresql://
+
 if DB_URL.startswith('postgres://'):
     DB_URL = DB_URL.replace('postgres://', 'postgresql://', 1)
 

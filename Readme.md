@@ -1,66 +1,64 @@
-# CricMB
+# CricmB
 
-CricMB is a simple tool to compare IPL players using ball-by-ball match data.
+IPL player comparison tool built on ball-by-ball match data. The idea came from a simple frustration — overall stats like career average or total runs don't tell you much about how a player actually performs in different situations.
 
-It shows how players perform in different situations, not just overall numbers. The idea is to make comparison easier and more meaningful
-Instead of only looking at stats like average or total runs, CricMB highlights important match skills like scoring speed, dot ball control, wicket taking ability, and performance in different phases of the innings.
+CricmB converts raw ball-by-ball data into percentile scores across specific skill areas, so comparing two players is visual and immediate rather than a manual exercise in reading stat tables.
 
----
-
-## How it shows performance
-
-Player performance is converted into percentiles so comparison becomes simple.
-Higher percentile means the player performs better compared to other IPL players.
-
-Example:
-
-* high percentile → strong skill
-* average percentile → normal performance
-* low percentile → weaker area
-
----
-
-## Visual comparison
-
-Performance is displayed using a spider (radar) chart.
-Each axis represents an important skill area.
-
-For batters this can include:
-
-* Total runs
-* dot ball %
-* boundary hitting
-* performance vs spin
-* performance vs pace
-* powerplay scoring
-* death overs scoring
-
-For bowlers this can include:
-
-* economy
-* dot ball %
-* wickets taken
-* strike rate
-* death overs economy
-* performance vs right hand batters
-* performance vs left hand batters
-
-This makes it easy to quickly compare two players and understand their strengths.
+**Live:** https://cricmb.onrender.com
 
 
-## Example Comparisons
+## How it works
 
-### Batter comparison (radar chart)
-Shows strengths across strike rate, dot ball %, boundary %, performance vs spin and pace.
+Every player gets a percentile score for each skill - calculated against all IPL players in the dataset. A score of 80 means the player performs better than 80% of IPL players in that area.
+
+This makes comparison straightforward. You're not reading raw numbers, you're seeing relative strength across skills on a single chart.
+
+
+## Skills tracked
+
+**Batters**
+- Total runs
+- Strike rate
+- Dot ball percentage
+- Boundary hitting rate
+- Performance vs spin
+- Performance vs pace
+- Powerplay scoring
+- Death overs scoring
+
+**Bowlers**
+- Economy rate
+- Dot ball percentage
+- Wickets taken
+- Bowling strike rate
+- Death overs economy
+- Performance vs right-hand batters
+- Performance vs left-hand batters
+
+
+## Visualization
+
+Performance is displayed as a radar (spider) chart. Each axis is one skill area. Two players plotted on the same chart makes strengths and gaps immediately visible without reading any numbers.
 
 ![Batter Comparison](docs/Batter_comparison.png)
 
-
-### Bowler comparison (radar chart)
-Shows economy, dot ball %, wicket taking ability, powerplay and death overs performance.
-
 ![Bowler Comparison](docs/Bowler_comparison.png)
 
----
 
-Currently this is a basic version focused only on IPL data comparison.
+## Tech stack
+
+Python, Streamlit, PostgreSQL, Pandas, Plotly
+
+Ball-by-ball IPL dataset - also used as the test database for [AskDB](https://github.com/Ardent-7322/AskDB-AI-Query-Assistant), a natural language query tool that connects directly to this PostgreSQL database.
+
+
+## Running locally
+
+```bash
+git clone https://github.com/Ardent-7322/CricMB
+cd CricMB
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Needs a PostgreSQL connection with the IPL dataset loaded. Connection details go in `.env`.

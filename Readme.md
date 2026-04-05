@@ -1,6 +1,6 @@
 # CricmB
 
-IPL player comparison tool built on ball-by-ball match data. The idea came from a simple frustration — overall stats like career average or total runs don't tell you much about how a player actually performs in different situations.
+IPL player comparison tool built on ball-by-ball match data. The idea came from a simple frustration overall stats like career average or total runs don't tell you much about how a player actually performs in different situations.
 
 CricmB converts raw ball-by-ball data into percentile scores across specific skill areas, so comparing two players is visual and immediate rather than a manual exercise in reading stat tables.
 
